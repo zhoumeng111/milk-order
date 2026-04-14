@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>牛奶订购</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; max-width: 414px; margin: 0 auto; }
+    
+    /* 状态栏 */
+    .status-bar { background: #4A90D9; color: white; padding: 10px 15px; font-size: 12px; display: flex; justify-content: space-between; }
+    
+    /* 搜索栏 */
+    .search-bar { background: #4A90D9; padding: 10px 15px 20px; }
+    .search-input { background: white; padding: 12px 20px; border-radius: 30px; width: 100%; font-size: 14px; border: none; outline: none; }
+    
+    /* 分类导航 */
+    .category-nav { display: flex; padding: 15px; gap: 15px; overflow-x: auto; white-space: nowrap; background: white; }
+    .category-item { padding: 8px 20px; background: #f5f5f5; border-radius: 20px; font-size: 13px; color: #666; flex-shrink: 0; }
+    .category-item.active { background: #4A90D9; color: white; }
+    
+    /* 商品列表 */
+    .product-list { display: flex; flex-wrap: wrap; justify-content: space-between; padding: 15px; gap: 15px; }
+    .product-card { width: calc(50% - 8px); background: white; border-radius: 12px; overflow: hidden; }
+    .product-image { width: 100%; height: 150px; background: linear-gradient(135deg, #e8f4fc 0%, #d4e8f7 100%); display: flex; align-items: center; justify-content: center; font-size: 48px; }
+    .product-info { padding: 12px; }
+    .product-name { font-size: 14px; font-weight: bold; color: #333; margin-bottom: 5px; display: block; }
+    .product-spec { font-size: 12px; color: #999; margin-bottom: 10px; display: block; }
+    .product-bottom { display: flex; justify-content: space-between; align-items: center; }
+    .product-price { color: #ff5500; font-size: 16px; font-weight: bold; }
+    .add-cart-btn { width: 28px; height: 28px; background: #4A90D9; color: white; border-radius: 50%; text-align: center; line-height: 28px; font-size: 18px; }
+    
+    /* 底部Tab */
+    .tab-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); max-width: 414px; width: 100%; display: flex; background: white; border-top: 1px solid #eee; padding: 8px 0 20px; }
+    .tab-item { flex: 1; text-align: center; }
+    .tab-icon { font-size: 22px; display: block; margin-bottom: 3px; }
+    .tab-text { font-size: 10px; color: #999; }
+    .tab-item.active .tab-text { color: #4A90D9; }
+    
+    /* 页面标题 */
+    .page-title { background: #4A90D9; color: white; padding: 15px; font-size: 16px; text-align: center; }
+  </style>
+</head>
+<body>
+  
+  <!-- 首页 -->
+  <div id="home-page">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span>📶 📡 🔋</span>
+    </div>
+    <div class="search-bar">
+      <input class="search-input" placeholder="搜索牛奶商品" readonly>
+    </div>
+    <div class="category-nav">
+      <span class="category-item active">全部</span>
+      <span class="category-item">鲜奶</span>
+      <span class="category-item">酸奶</span>
+      <span class="category-item">纯牛奶</span>
+      <span class="category-item">奶酪</span>
+    </div>
+    <div class="product-list">
+      <div class="product-card" onclick="showToast('点击了: 每日鲜语鲜牛奶')">
+        <div class="product-image">🥛</div>
+        <div class="product-info">
+          <span class="product-name">每日鲜语鲜牛奶</span>
+          <span class="product-spec">1L/瓶</span>
+          <div class="product-bottom">
+            <span class="product-price">¥19.9</span>
+            <span class="add-cart-btn" onclick="event.stopPropagation(); showToast('已加入购物车')">+</span>
+          </div>
+        </div>
+      </div>
+      <div class="product-card" onclick="showToast('点击了: 安慕希酸奶')">
+        <div class="product-image">酸奶</div>
+        <div class="product-info">
+          <span class="product-name">安慕希酸奶</span>
+          <span class="product-spec">205g/盒</span>
+          <div class="product-bottom">
+            <span class="product-price">¥12.9</span>
+            <span class="add-cart-btn" onclick="event.stopPropagation(); showToast('已加入购物车')">+</span>
+          </div>
+        </div>
+      </div>
+      <div class="product-card" onclick="showToast('点击了: 伊利纯牛奶')">
+        <div class="product-image">🥛</div>
+        <div class="product-info">
+          <span class="product-name">伊利纯牛奶</span>
+          <span class="product-spec">250ml/盒</span>
+          <div class="product-bottom">
+            <span class="product-price">¥3.5</span>
+            <span class="add-cart-btn" onclick="event.stopPropagation(); showToast('已加入购物车')">+</span>
+          </div>
+        </div>
+      </div>
+      <div class="product-card" onclick="showToast('点击了: 莫斯利安酸奶')">
+        <div class="product-image">酸奶</div>
+        <div class="product-info">
+          <span class="product-name">莫斯利安酸奶</span>
+          <span class="product-spec">200g/盒</span>
+          <div class="product-bottom">
+            <span class="product-price">¥8.9</span>
+            <span class="add-cart-btn" onclick="event.stopPropagation(); showToast('已加入购物车')">+</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab-item active">
+        <span class="tab-icon">🏠</span>
+        <span class="tab-text">首页</span>
+      </div>
+      <div class="tab-item" onclick="showToast('购物车')">
+        <span class="tab-icon">🛒</span>
+        <span class="tab-text">购物车</span>
+      </div>
+      <div class="tab-item" onclick="showToast('订单')">
+        <span class="tab-icon">📦</span>
+        <span class="tab-text">订单</span>
+      </div>
+      <div class="tab-item" onclick="showToast('我的')">
+        <span class="tab-icon">👤</span>
+        <span class="tab-text">我的</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast 提示 -->
+  <div id="toast" style="position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.7); color:white; padding:15px 30px; border-radius:8px; font-size:14px; display:none; z-index:9999;"></div>
+
+  <script>
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 1500);
+    }
+  </script>
+</body>
+</html>
