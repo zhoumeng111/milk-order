@@ -1,0 +1,7 @@
+{
+  "framework": null,
+  "buildCommand": "cd frontend && npm install && npm run build:h5",
+  "outputDirectory": "frontend/dist/build/h5",
+  "installCommand": "cd frontend && npm install",
+  "devCommand": "cd frontend && npm run dev:h5"
+}
