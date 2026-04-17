@@ -1,183 +1,59 @@
 <template>
   <view class="container">
-    <!-- Tab切换 -->
-    <view class="tabs">
-      <view 
-        class="tab-item" 
-        :class="{ active: currentTab === 'available' }"
-        @click="currentTab = 'available'"
-      >可使用</view>
-      <view 
-        class="tab-item" 
-        :class="{ active: currentTab === 'used' }"
-        @click="currentTab = 'used'"
-      >已使用</view>
-      <view 
-        class="tab-item" 
-        :class="{ active: currentTab === 'expired' }"
-        @click="currentTab = 'expired'"
-      >已过期</view>
-    </view>
-
-    <!-- 优惠券列表 -->
     <view class="coupon-list">
-      <view 
-        v-for="coupon in filteredCoupons" 
-        :key="coupon.id"
-        class="coupon-card"
-        :class="{ disabled: currentTab !== 'available' }"
-      >
+      <view class="coupon-card" v-for="coupon in coupons" :key="coupon.id">
         <view class="coupon-left">
           <text class="coupon-value">{{ coupon.value }}</text>
           <text class="coupon-unit">元</text>
         </view>
         <view class="coupon-right">
-          <text class="coupon-name">{{ coupon.name }}</text>
-          <text class="coupon-condition">{{ coupon.condition }}</text>
-          <text class="coupon-expire">有效期至 {{ coupon.expireDate }}</text>
+          <text class="coupon-title">{{ coupon.title }}</text>
+          <text class="coupon-desc">{{ coupon.desc }}</text>
+          <text class="coupon-time">有效期至 {{ coupon.expire }}</text>
         </view>
-        <view class="coupon-tag" v-if="currentTab === 'available'">立即使用</view>
+        <view class="coupon-action" @click="receiveCoupon(coupon)">
+          <text>{{ coupon.received ? '已领取' : '立即领取' }}</text>
+        </view>
       </view>
     </view>
-
-    <!-- 空状态 -->
-    <view class="empty" v-if="!filteredCoupons.length">
-      <text class="empty-icon">🎫</text>
-      <text class="empty-text">{{ emptyText }}</text>
+    <view class="empty" v-if="!coupons.length">
+      <text>暂无可领取优惠券</text>
     </view>
   </view>
 </template>
 
 <script>
-export default {
+module.exports = {
   data() {
     return {
-      currentTab: 'available',
       coupons: [
-        { id: 1, name: '新人专享券', value: 10, condition: '满50元可用', expireDate: '2026-12-31', status: 'available' },
-        { id: 2, name: '会员满减券', value: 20, condition: '满100元可用', expireDate: '2026-06-30', status: 'available' },
-        { id: 3, name: '限时折扣券', value: 5, condition: '满30元可用', expireDate: '2026-05-01', status: 'used' },
-        { id: 4, name: '节日特惠券', value: 15, condition: '满80元可用', expireDate: '2026-03-01', status: 'expired' }
+        { id: 1, value: '10', title: '新人专享券', desc: '满59元可用', expire: '2026-04-30', received: false },
+        { id: 2, value: '20', title: '满减优惠券', desc: '满129元可用', expire: '2026-05-15', received: false },
+        { id: 3, value: '5', title: '配送费券', desc: '无门槛', expire: '2026-04-25', received: false }
       ]
-    }
+    };
   },
-  computed: {
-    filteredCoupons() {
-      return this.coupons.filter(c => c.status === this.currentTab)
-    },
-    emptyText() {
-      const texts = {
-        available: '暂无可用优惠券',
-        used: '暂无已使用优惠券',
-        expired: '暂无已过期优惠券'
-      }
-      return texts[this.currentTab]
+  methods: {
+    receiveCoupon(coupon) {
+      if (coupon.received) return;
+      coupon.received = true;
+      uni.showToast({ title: '领取成功', icon: 'success' });
     }
   }
-}
+};
 </script>
 
 <style scoped>
-.container {
-  background: #f5f5f5;
-  min-height: 100vh;
-}
-.tabs {
-  display: flex;
-  background: #fff;
-  border-bottom: 1rpx solid #eee;
-}
-.tab-item {
-  flex: 1;
-  text-align: center;
-  padding: 30rpx 0;
-  font-size: 28rpx;
-  color: #666;
-}
-.tab-item.active {
-  color: #4A90D9;
-  font-weight: bold;
-  border-bottom: 4rpx solid #4A90D9;
-}
-.coupon-list {
-  padding: 20rpx;
-  display: flex;
-  flex-direction: column;
-  gap: 20rpx;
-}
-.coupon-card {
-  display: flex;
-  background: #fff;
-  border-radius: 12rpx;
-  overflow: hidden;
-  position: relative;
-}
-.coupon-card.disabled {
-  opacity: 0.6;
-}
-.coupon-left {
-  width: 180rpx;
-  background: #ff5500;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 30rpx 0;
-}
-.coupon-value {
-  font-size: 60rpx;
-  font-weight: bold;
-  color: #fff;
-}
-.coupon-unit {
-  font-size: 28rpx;
-  color: #fff;
-  margin-left: 8rpx;
-}
-.coupon-right {
-  flex: 1;
-  padding: 20rpx 30rpx;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.coupon-name {
-  font-size: 30rpx;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 8rpx;
-}
-.coupon-condition {
-  font-size: 24rpx;
-  color: #999;
-  margin-bottom: 8rpx;
-}
-.coupon-expire {
-  font-size: 22rpx;
-  color: #ccc;
-}
-.coupon-tag {
-  position: absolute;
-  right: 30rpx;
-  top: 50%;
-  transform: translateY(-50%);
-  background: #4A90D9;
-  color: #fff;
-  font-size: 22rpx;
-  padding: 10rpx 20rpx;
-  border-radius: 30rpx;
-}
-.empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 150rpx 0;
-}
-.empty-icon {
-  font-size: 100rpx;
-  margin-bottom: 30rpx;
-}
-.empty-text {
-  font-size: 28rpx;
-  color: #999;
-}
+.container { min-height: 100vh; background: #f5f5f5; padding: 20rpx; }
+.coupon-card { display: flex; background: #fff; margin-bottom: 20rpx; border-radius: 12rpx; overflow: hidden; }
+.coupon-left { width: 180rpx; background: linear-gradient(135deg, #ff5500, #ff7700); display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; padding: 30rpx 0; }
+.coupon-value { font-size: 56rpx; font-weight: bold; }
+.coupon-unit { font-size: 24rpx; }
+.coupon-right { flex: 1; padding: 30rpx 20rpx; }
+.coupon-title { display: block; font-size: 30rpx; font-weight: bold; margin-bottom: 10rpx; }
+.coupon-desc { display: block; font-size: 24rpx; color: #666; margin-bottom: 10rpx; }
+.coupon-time { font-size: 22rpx; color: #999; }
+.coupon-action { width: 160rpx; display: flex; align-items: center; justify-content: center; background: #ff5500; color: #fff; font-size: 26rpx; }
+.coupon-action text { color: #fff; font-size: 26rpx; }
+.empty { text-align: center; padding-top: 200rpx; color: #999; font-size: 28rpx; }
 </style>

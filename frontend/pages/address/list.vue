@@ -1,190 +1,66 @@
 <template>
   <view class="container">
-    <!-- 地址列表 -->
     <view class="address-list" v-if="addresses.length">
-      <view
-        v-for="item in addresses"
-        :key="item.id"
-        class="address-card"
-        :class="{ default: item.isDefault }"
-      >
-        <view class="address-content" @click="selectAddress(item)">
-          <view class="address-header">
-            <text class="contact-name">{{ item.name }}</text>
-            <text class="contact-phone">{{ item.phone }}</text>
-            <text class="default-tag" v-if="item.isDefault">默认</text>
+      <view class="address-card" v-for="addr in addresses" :key="addr._id || addr.id">
+        <view class="addr-main" @click="selectAddr(addr)">
+          <view class="addr-user">
+            <text class="addr-name">{{ addr.name }}</text>
+            <text class="addr-phone">{{ addr.phone }}</text>
+            <text class="default-tag" v-if="addr.isDefault">默认</text>
           </view>
-          <view class="address-detail">{{ item.province }}{{ item.city }}{{ item.district }}{{ item.detail }}</view>
+          <text class="addr-detail">{{ addr.detail }}</text>
         </view>
-        <view class="address-actions">
-          <view class="action-btn edit" @click="editAddress(item)">编辑</view>
-          <view class="action-btn delete" @click="deleteAddress(item.id)">删除</view>
+        <view class="addr-actions">
+          <text class="action-btn" @click="deleteAddr(addr)">删除</text>
         </view>
       </view>
     </view>
-
-    <!-- 空状态 -->
-    <view class="empty" v-if="!addresses.length">
-      <text class="empty-icon">📍</text>
-      <text class="empty-text">暂无收货地址</text>
+    <view class="empty" v-else>
+      <text>暂无收货地址</text>
     </view>
-
-    <!-- 新增按钮 -->
-    <view class="add-btn" @click="addAddress">
-      <text>+ 新增收货地址</text>
+    <view class="add-btn-wrap">
+      <view class="add-btn" @click="goToAdd">
+        <text>+ 添加收货地址</text>
+      </view>
     </view>
   </view>
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      addresses: [
-        {
-          id: 1,
-          name: '张三',
-          phone: '13800138000',
-          province: '北京市',
-          city: '北京市',
-          district: '朝阳区',
-          detail: '建国路88号SOHO现代城',
-          isDefault: true
-        },
-        {
-          id: 2,
-          name: '李四',
-          phone: '13900139000',
-          province: '上海市',
-          city: '上海市',
-          district: '浦东新区',
-          detail: '世纪大道100号环球金融中心',
-          isDefault: false
-        }
-      ]
-    }
-  },
+module.exports = {
+  data() { return { addresses: [
+    { id: '1', name: '张三', phone: '13812348888', detail: '广东省广州市天河区珠江新城花城大道88号', isDefault: true },
+    { id: '2', name: '李四', phone: '13912345678', detail: '广东省深圳市南山区科技园', isDefault: false }
+  ]}; },
   methods: {
-    selectAddress(item) {
-      // 返回选中的地址
-      const pages = getCurrentPages()
-      const prevPage = pages[pages.length - 2]
-      if (prevPage) {
-        prevPage.$vm.selectedAddress = item
-      }
-      uni.navigateBack()
+    selectAddr(addr) {
+      const pages = getCurrentPages();
+      const prev = pages[pages.length - 2];
+      if (prev) prev.selectedAddress = addr;
+      uni.navigateBack();
     },
-    addAddress() {
-      uni.showToast({ title: '新增地址功能开发中', icon: 'none' })
+    deleteAddr(addr) {
+      uni.showModal({ title: '提示', content: '确定删除？', success: (res) => {
+        if (res.confirm) this.addresses = this.addresses.filter(a => a.id !== addr.id);
+      }});
     },
-    editAddress(item) {
-      uni.showToast({ title: '编辑地址功能开发中', icon: 'none' })
-    },
-    deleteAddress(id) {
-      uni.showModal({
-        title: '确认删除',
-        content: '确定要删除该地址吗？',
-        success: (res) => {
-          if (res.confirm) {
-            this.addresses = this.addresses.filter(a => a.id !== id)
-            uni.showToast({ title: '已删除', icon: 'success' })
-          }
-        }
-      })
-    }
+    goToAdd() { uni.navigateTo({ url: '/pages/user/address' }); }
   }
-}
+};
 </script>
 
 <style scoped>
-.container {
-  padding: 20rpx;
-  padding-bottom: 120rpx;
-  background: #f5f5f5;
-  min-height: 100vh;
-}
-.address-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20rpx;
-}
-.address-card {
-  background: #fff;
-  border-radius: 12rpx;
-  padding: 30rpx;
-}
-.address-card.default {
-  border: 2rpx solid #4A90D9;
-}
-.address-content {
-  margin-bottom: 20rpx;
-}
-.address-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15rpx;
-}
-.contact-name {
-  font-size: 30rpx;
-  font-weight: bold;
-  color: #333;
-  margin-right: 20rpx;
-}
-.contact-phone {
-  font-size: 28rpx;
-  color: #666;
-}
-.default-tag {
-  background: #4A90D9;
-  color: #fff;
-  font-size: 22rpx;
-  padding: 4rpx 12rpx;
-  border-radius: 6rpx;
-  margin-left: 20rpx;
-}
-.address-detail {
-  font-size: 28rpx;
-  color: #666;
-  line-height: 1.5;
-}
-.address-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 30rpx;
-  border-top: 1rpx solid #eee;
-  padding-top: 20rpx;
-}
-.action-btn {
-  font-size: 26rpx;
-  color: #666;
-}
-.action-btn.delete {
-  color: #ff5500;
-}
-.empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 150rpx 0;
-}
-.empty-icon {
-  font-size: 100rpx;
-  margin-bottom: 30rpx;
-}
-.empty-text {
-  font-size: 28rpx;
-  color: #999;
-}
-.add-btn {
-  position: fixed;
-  bottom: 40rpx;
-  left: 30rpx;
-  right: 30rpx;
-  background: #4A90D9;
-  color: #fff;
-  text-align: center;
-  padding: 25rpx;
-  border-radius: 50rpx;
-  font-size: 30rpx;
-}
+.container { min-height: 100vh; background: #f5f5f5; padding-bottom: 140rpx; }
+.address-card { background: #fff; margin: 20rpx; border-radius: 12rpx; padding: 30rpx; }
+.addr-main { padding-bottom: 20rpx; border-bottom: 1rpx solid #f5f5f5; }
+.addr-user { display: flex; align-items: center; gap: 16rpx; margin-bottom: 10rpx; }
+.addr-name { font-size: 30rpx; font-weight: bold; }
+.addr-phone { font-size: 28rpx; color: #666; }
+.default-tag { background: #4A90D9; color: #fff; font-size: 22rpx; padding: 4rpx 12rpx; border-radius: 20rpx; }
+.addr-detail { font-size: 26rpx; color: #666; line-height: 1.5; }
+.addr-actions { padding-top: 20rpx; display: flex; justify-content: flex-end; }
+.action-btn { font-size: 26rpx; color: #ff5500; }
+.empty { display: flex; justify-content: center; padding-top: 200rpx; color: #999; font-size: 28rpx; }
+.add-btn-wrap { position: fixed; bottom: 0; left: 0; right: 0; padding: 20rpx 30rpx; background: #fff; border-top: 1rpx solid #eee; }
+.add-btn { background: #4A90D9; color: #fff; text-align: center; padding: 24rpx; border-radius: 40rpx; font-size: 30rpx; }
 </style>
