@@ -777,7 +777,7 @@ function renderReview() {
   document.getElementById('review-content').oninput = function() { document.getElementById('word-count').textContent = this.value.length; };
 }
 function renderStars() {
-  document.getElementById('stars').innerHTML = [    [1,2,3,4,5].map(i => '<span class="star'+(i<=currentRating?' active':'')+'" onclick="setRating('+i+')">★</span>').join('');
+  document.getElementById('stars').innerHTML = [1,2,3,4,5].map(i => '<span class="star'+(i<=currentRating?' active':'')+'" onclick="setRating('+i+')">★</span>').join('');
   var texts = ['','很差','较差','一般','满意','非常满意'];
   document.getElementById('rating-text').textContent = texts[currentRating] || '';
 }
